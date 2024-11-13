@@ -11,20 +11,11 @@ import javax.imageio.ImageIO;
 public class Spike {
 	
 	public BufferedImage spike1;
-	//BufferedImage spike11 = spike1;
-
-	public BufferedImage spike2;
-	//BufferedImage spike22 = spike2;
-	
-
+	public BufferedImage spike2;	
 	public BufferedImage spike3;
-	//BufferedImage spike33 = spike3;
-
 	public BufferedImage spike4;
-	//BufferedImage spike44 = spike4;
 	
 	Player player;
-	
 
 	int x;
 	int y;
@@ -63,6 +54,7 @@ public class Spike {
             break;
 
         default:
+        	System.err.println("Spike rotation not equal to 1-4");
             break;
     }
 		
