@@ -14,6 +14,7 @@ public class MainPanel extends JPanel {
 	int previousRandomInt = 0;
 	final String altResError = "Error: This resolution does not exist.";
 
+	boolean isOnAlternateResolution = false;
 
 	// Names
 	// Base note in half notes
@@ -21,6 +22,7 @@ public class MainPanel extends JPanel {
 	final String[] intervalNames = {"l2", "m7", "pm5", "Pl4", "Pl2", "pm7"};
 	final int[] intervalIncreaseNoteBy = {5, 7, 11, 4, 8, 11};
 	final int[] intervalBaseNotes = {2, 10, 6, 6, 3, 9};
+	final boolean[] hasAlternateResolution = {true, true, false, false, false, false};
 
 	final String[] resolutionNames = {"m3", "l6", "l3", "m6", "t4", "t5"};
 	final int[] resolutionBaseNote = {3, 9, 4, 8, 5, 7};
@@ -28,11 +30,11 @@ public class MainPanel extends JPanel {
 
 
 	final String[] alternateResolutionNames = {"m6", "l3", altResError, altResError, altResError, altResError};
-	final int[] alternateResolutionBaseNotes = {4, 0, -1, -1, -1, -1};
-	final int[] alternateResolutionDistanceToTopNote = {8, 4, -100, -100, -100, -100};
+	final int[] alternateResolutionBaseNotes = {8, 4, -100, -100, -100, -100};
+	final int[] alternateResolutionDistanceToTopNote = {4, 0, -100, -100, -100, -100};
 
 	int currentInterval;
-	int currentNoteChange = ThreadLocalRandom.current().nextInt(notes.length-1);
+	int currentNoteChange = ThreadLocalRandom.current().nextInt((notes.length-1)/2);
 
 	final String[] modes = {"major", "minor"};
 	Chords chords;
@@ -44,7 +46,7 @@ public class MainPanel extends JPanel {
 	public MainPanel() {
 		testingMusic();
 		String currentMode = modes[ThreadLocalRandom.current().nextInt(modes.length)];
-		this.chords = new Chords(this,currentNoteChange,currentMode,player);
+		this.chords = new Chords(this,0,currentMode,player);
 	}
 	
 	public void testingMusic() {
@@ -114,7 +116,7 @@ public class MainPanel extends JPanel {
 
 		System.out.println(resolutionBottomNote+" "+resolutionNote +" ! " + scale);
 		System.out.println();
-        String fullResolution = resolutionBottomNote + startingScale + noteLength +"+"+ resolutionNote + scale + noteLength;;
+        String fullResolution = resolutionBottomNote + startingScale + noteLength +"+"+ resolutionNote + scale + noteLength;
 
         return fullResolution;
 	}
@@ -130,6 +132,7 @@ public class MainPanel extends JPanel {
 						if(randomIndex == previousRandomInt) { randomIndex = 5; }
 				}
 		}
+		//randomIndex = 1;
 		previousRandomInt = randomIndex;
 
 		//int baseNote = intervalBaseNotes[randomIndex];
@@ -144,11 +147,19 @@ public class MainPanel extends JPanel {
 		
 		return new Object[] {Interval, baseNote, currentScale, null, null};
 	}
+
+
 	
 	public Object[] chooseResolution() {
-
 		int resolutionBaseNote = this.resolutionBaseNote[currentInterval];
 		int resolution = resolutionIncreaseNoteBy[currentInterval];
+		isOnAlternateResolution = false;
+
+		if(hasAlternateResolution[currentInterval] && ThreadLocalRandom.current().nextInt(2) == 1) {
+			resolutionBaseNote = this.alternateResolutionBaseNotes[currentInterval];
+			resolution = alternateResolutionDistanceToTopNote[currentInterval];
+			isOnAlternateResolution = true;
+		}
 
 		System.out.println(resolutionNames[currentInterval]);
 		
@@ -157,8 +168,15 @@ public class MainPanel extends JPanel {
 
 
 	public void revealButtonPressed(JTextField revealField, JTextField resRevealField) {
-		revealField.setText(intervalNames[currentInterval]);
-		resRevealField.setText(resolutionNames[currentInterval]);
+
+		if(isOnAlternateResolution) {
+			revealField.setText(intervalNames[currentInterval]);
+			resRevealField.setText(alternateResolutionNames[currentInterval]);
+		} else {
+			revealField.setText(intervalNames[currentInterval]);
+			resRevealField.setText(resolutionNames[currentInterval]);
+		}
+
 	}
 	
 	public void buttonPressed() {
